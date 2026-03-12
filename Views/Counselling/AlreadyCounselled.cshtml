@@ -1,0 +1,41 @@
+﻿@model List<AdmissionInquiryRecord.Models.CounsellingRecord>
+@{
+    ViewData["Title"] = "Already Counselled Students";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-success">✅ Already Counselled</h2>
+        <hr style="width:250px; margin:10px auto; border:2px solid #28a745;" />
+    </div>
+
+    <!-- Top Buttons -->
+    <div class="text-center mb-4">
+        <a href="@Url.Action("UnassignedStudents")" class="btn btn-warning mx-1">🆕 Unassigned Students</a>
+        <a href="@Url.Action("AssignedStudents")" class="btn btn-primary mx-1">👤 Assigned Students</a>
+        <a href="@Url.Action("AlreadyCounselled")" class="btn btn-success mx-1">✅ Already Counselled</a>
+    </div>
+
+    @if (Model.Any())
+    {
+        <ul class="list-group shadow">
+            @foreach (var record in Model)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center bg-light">
+                    <div>
+                        <strong>@(record.Person?.Name ?? "Student")</strong><br />
+                        Counselling ID: @record.CounsellingId<br />
+                        Date: @record.VisitDate.ToString("dd-MM-yyyy HH:mm")
+                    </div>
+                    <span class="badge bg-success">Completed</span>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div class="alert alert-light text-center">No counselling records available.</div>
+    }
+</div>

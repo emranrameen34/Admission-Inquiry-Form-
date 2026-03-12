@@ -1,0 +1,512 @@
+﻿@model AdmissionInquiryRecord.Models.CounsellingRecord
+@{
+    ViewData["Title"] = "Counselling Record";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@4.0.0/dist/jquery.validate.unobtrusive.min.js"></script>
+
+<style>
+
+    body {
+        background: #f4f6f9;
+    }
+
+    /* Page heading */
+
+    .page-title {
+        font-weight: 700;
+        color: #2c3e50;
+    }
+
+    .student-name {
+        color: #6c757d;
+    }
+
+    /* Cards */
+
+    .card {
+        border-radius: 10px;
+    }
+
+    .card-header {
+        font-weight: 600;
+        font-size: 16px;
+    }
+
+    /* Form inputs */
+
+    .form-control {
+        border-radius: 6px;
+        padding: 10px;
+    }
+
+    textarea.form-control {
+        min-height: 90px;
+    }
+
+    /* Buttons */
+
+    .btn-success {
+        font-size: 18px;
+        padding: 12px;
+    }
+
+    /* History panel */
+
+    .history-scroll {
+        max-height: 480px;
+        overflow-y: auto;
+    }
+
+    /* History visit cards */
+
+    .visit-card {
+        border-left: 4px solid #0d6efd;
+    }
+
+    /* Status colors */
+
+    .status-converted {
+        background: #28a745;
+    }
+
+    .status-considering {
+        background: #ffc107;
+        color: #000;
+    }
+
+    .status-notinterested {
+        background: #dc3545;
+    }
+
+    .status-noresponse {
+        background: #6c757d;
+    }
+
+</style>
+
+<div class="container mt-5">
+
+    <!-- Heading -->
+    <div class="text-center mb-4">
+        <h2 class="page-title">Counselling Record</h2>
+        <h5 class="student-name">Student: <strong>@ViewBag.PersonName</strong></h5>
+        <hr style="width:250px;margin:10px auto;border:2px solid #0d6efd;">
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+
+            <!-- LEFT SIDE : COUNSELLING FORM -->
+            <div class="col-lg-8">
+
+                <form asp-action="Create" method="post" id="counsellingForm">
+
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                    <input type="hidden" asp-for="PersonId" />
+                    <input type="hidden" asp-for="CounsellorId" />
+                    <input type="hidden" asp-for="VisitDate" />
+
+                    <!-- COUNSELLING INFO -->
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="text-center mb-0">Counselling Information</h5>
+                        </div>
+
+                        <div class="card-body">
+
+                            <div class="mb-3">
+                                <label class="form-label">Information / Package Given:</label>
+                                <input type="text" asp-for="InfoGiven" class="form-control" required />
+                                <span asp-validation-for="InfoGiven" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Scholarship / Fee Offer:</label>
+                                <input type="text" asp-for="FeeOffer" class="form-control" required />
+                                <span asp-validation-for="FeeOffer" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Prospectus Purchased:</label><br />
+
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio"
+                                           asp-for="ProspectusPurchased"
+                                           value="true" required />
+                                    <label class="form-check-label">Yes</label>
+                                </div>
+
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio"
+                                           asp-for="ProspectusPurchased"
+                                           value="false" required />
+                                    <label class="form-check-label">No</label>
+                                </div>
+
+                                <span asp-validation-for="ProspectusPurchased" class="text-danger"></span>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                    <!-- REMARKS -->
+                    <div class="card mb-4 shadow-sm">
+
+                        <div class="card-header text-white" style="background-color:#20c997;">
+                            <h5 class="text-center mb-0">Remarks</h5>
+                        </div>
+
+                        <div class="card-body">
+
+                            <div class="mb-3">
+                                <label class="form-label">Remarks / Expectations:</label>
+                                <textarea asp-for="Expectations" class="form-control"></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Special Comments:</label>
+                                <textarea asp-for="Comments" class="form-control"></textarea>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- FOLLOW-UP -->
+                    <div class="card mb-4 shadow-sm">
+
+                        <div class="card-header text-white" style="background-color:#fd7e14;">
+                            <h5 class="text-center mb-0">Follow-Up</h5>
+                        </div>
+
+                        <div class="card-body">
+
+                            <div class="mb-3">
+
+                                <label class="form-label">Follow-Up Required:</label><br />
+
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input"
+                                           type="radio"
+                                           asp-for="FollowupRequired"
+                                           value="true" required />
+                                    <label class="form-check-label">Yes</label>
+                                </div>
+
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input"
+                                           type="radio"
+                                           asp-for="FollowupRequired"
+                                           value="false" checked />
+                                    <label class="form-check-label">No</label>
+                                </div>
+
+                                <span asp-validation-for="FollowupRequired" class="text-danger"></span>
+
+                            </div>
+
+
+                            <div id="followUpFields" style="display:none;">
+
+                                <div class="mb-3">
+                                    <label class="form-label">Follow-Up Date:</label>
+                                    <input type="date" asp-for="FollowupDate" class="form-control" />
+                                    <span asp-validation-for="FollowupDate" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Contact Method:</label><br />
+
+                                    @foreach (var option in (ViewBag.ContactMethods ?? new string[] { }))
+                                    {
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input"
+                                                   type="radio"
+                                                   asp-for="ContactMethod"
+                                                   value="@option" />
+                                            <label class="form-check-label">@option</label>
+                                        </div>
+                                    }
+
+                                    <span asp-validation-for="ContactMethod" class="text-danger"></span>
+                                </div>
+
+
+                                <div class="mb-3">
+                                    <label class="form-label">Status:</label><br />
+
+                                    @foreach (var option in ViewBag.StatusOptions)
+                                    {
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input"
+                                                   type="radio"
+                                                   asp-for="Status"
+                                                   value="@option" />
+                                            <label class="form-check-label">@option</label>
+                                        </div>
+                                    }
+
+                                    <span asp-validation-for="Status" class="text-danger"></span>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="d-grid mb-5">
+                        <button type="submit" class="btn btn-success btn-lg shadow-sm">
+                            Save Counselling Record
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            <!-- RIGHT SIDE : STUDENT HISTORY -->
+            <div class="col-lg-4">
+
+                <div class="card shadow-lg border-0 sticky-top" style="top:20px;">
+
+                    <div class="card-header text-white" style="background:#343a40;">
+                        <h5 class="mb-0">Student History</h5>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="p-3 bg-white border rounded mb-3 shadow-sm">
+
+                            <div class="d-flex justify-content-between">
+                                <span class="fw-semibold">Total Visits</span>
+                                <span class="badge bg-primary fs-6">
+                                    @ViewBag.TotalVisits
+                                </span>
+                            </div>
+
+                            <hr>
+
+                            @if (ViewBag.LastVisit != null)
+                            {
+                                <p class="mb-1">
+                                    <strong>Last Visit</strong><br>
+                                    @ViewBag.LastVisit.VisitDate.ToString("dd MMM yyyy")
+                                </p>
+
+                                <p class="mb-0">
+                                    <strong>Status</strong><br>
+                                    <span class="badge bg-info text-dark">
+                                        @ViewBag.LastVisit.Status
+                                    </span>
+                                </p>
+                            }
+                            else
+                            {
+                                <p class="text-muted small">
+                                    No previous counselling record
+                                </p>
+                            }
+
+                        </div>
+
+
+                        <h6 class="fw-bold mb-3">Previous Visits</h6>
+
+                        <div class="history-scroll">
+
+                            @if (ViewBag.StudentHistory != null && ViewBag.StudentHistory.Count > 0)
+                            {
+                                @foreach (var item in ViewBag.StudentHistory)
+                                {
+
+                                    <div class="card mb-3 shadow-sm visit-card">
+
+                                        <div class="card-header bg-light d-flex justify-content-between">
+
+                                            <span class="fw-semibold">
+                                                @item.VisitDate.ToString("dd MMM yyyy")
+                                            </span>
+
+                                            <span class="badge
+        @(item.Status == "Converted" ? "status-converted" :
+                                                    item.Status == "Considering" ? "status-considering" :
+                                                    item.Status == "Not Interested" ? "status-notinterested" :
+                                                    "status-noresponse")">
+                                                @item.Status
+                                            </span>
+
+                                        </div>
+
+                                        <div class="card-body small">
+
+                                            <div class="row">
+
+                                                <div class="col-6 mb-2">
+                                                    <strong>Package Given</strong><br>
+                                                    @(string.IsNullOrEmpty(item.InfoGiven) ? "—" : item.InfoGiven)
+                                                </div>
+
+                                                <div class="col-6 mb-2">
+                                                    <strong>Fee Offer</strong><br>
+                                                    @(string.IsNullOrEmpty(item.FeeOffer) ? "—" : item.FeeOffer)
+                                                </div>
+
+                                                <div class="col-6 mb-2">
+                                                    <strong>Prospectus</strong><br>
+                                                    @(item.ProspectusPurchased ? "Yes" : "No")
+                                                </div>
+
+                                                <div class="col-6 mb-2">
+                                                    <strong>Follow-Up</strong><br>
+                                                    @(item.FollowupRequired ? "Required" : "Not Required")
+                                                </div>
+
+                                                @if (item.FollowupRequired && item.FollowupDate != null)
+                                                {
+                                                    <div class="col-6 mb-2">
+                                                        <strong>Follow-Up Date</strong><br>
+                                                        @item.FollowupDate?.ToString("dd MMM yyyy")
+                                                    </div>
+                                                }
+
+                                                @if (!string.IsNullOrEmpty(item.ContactMethod))
+                                                {
+                                                    <div class="col-6 mb-2">
+                                                        <strong>Contact Method</strong><br>
+                                                        @item.ContactMethod
+                                                    </div>
+                                                }
+
+                                            </div>
+
+                                            @if (!string.IsNullOrEmpty(item.Expectations))
+                                            {
+                                                <div class="mt-2">
+                                                    <strong>Expectations</strong><br>
+                                                    <span class="text-muted">@item.Expectations</span>
+                                                </div>
+                                            }
+
+                                            @if (!string.IsNullOrEmpty(item.Comments))
+                                            {
+                                                <div class="mt-2">
+                                                    <strong>Comments</strong><br>
+                                                    <span class="text-muted">@item.Comments</span>
+                                                </div>
+                                            }
+
+                                        </div>
+
+                                    </div>
+
+                                }
+                            }
+                            else
+                            {
+                                <p class="text-muted small">No history found</p>
+                            }
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+
+        // ================= Follow-up toggle =================
+        function toggleFollowUpFields() {
+            var val = $("input[name='FollowupRequired']:checked").val();
+            if (val === "true") {
+                $("#followUpFields").slideDown();
+            } else {
+                $("#followUpFields").slideUp();
+                $("#followUpFields").find("input, textarea, select").val("").prop('checked', false);
+                $("#followUpFields .is-invalid").removeClass("is-invalid");
+                $("#followUpFields .error-msg").remove();
+            }
+        }
+        toggleFollowUpFields(); // initial
+        $("input[name='FollowupRequired']").on("change", toggleFollowUpFields);
+
+        // ================= Clear error messages on input/change =================
+        $("input, textarea, select").on("input change", function () {
+            $(this).removeClass("is-invalid");
+            $(this).next(".error-msg").remove();
+        });
+
+        // ================= Form submit validation =================
+        $('#counsellingForm').on('submit', function (e) {
+            $(".error-msg").remove(); // remove previous errors
+            var isValid = true;
+
+            function showError(element, message) {
+                element.addClass("is-invalid");
+                if (!element.next().hasClass("error-msg")) {
+                    element.after('<div class="text-danger error-msg mt-1">' + message + '</div>');
+                }
+                isValid = false;
+            }
+
+            // InfoGiven
+            var info = $("[name='InfoGiven']");
+            if (info.val().trim().length < 3) showError(info, "Please enter at least 3 characters.");
+
+            // FeeOffer
+            var fee = $("[name='FeeOffer']");
+            if (fee.val().trim().length < 2) showError(fee, "Please enter at least 2 characters.");
+
+            // ProspectusPurchased
+            if ($("input[name='ProspectusPurchased']:checked").length === 0) {
+                showError($("input[name='ProspectusPurchased']").first(), "Please select Yes or No.");
+            }
+
+            // FollowupRequired
+            if ($("input[name='FollowupRequired']:checked").length === 0) {
+                showError($("input[name='FollowupRequired']").first(), "Please select follow-up option.");
+            }
+
+            // Follow-Up fields (only if required)
+            if ($("input[name='FollowupRequired']:checked").val() === "true") {
+                var followDate = $("[name='FollowupDate']");
+                if (followDate.val() === "") showError(followDate, "Please select follow-up date.");
+
+                if ($("input[name='ContactMethod']:checked").length === 0) {
+                    showError($("input[name='ContactMethod']").first(), "Please select contact method.");
+                }
+
+                if ($("input[name='Status']:checked").length === 0) {
+                    showError($("input[name='Status']").first(), "Please select status.");
+                }
+            }
+
+            if (!isValid) {
+                e.preventDefault(); // prevent form submit
+                $('html, body').animate({ scrollTop: $(".is-invalid").first().offset().top - 100 }, 300);
+                return false;
+            }
+
+            // Disable submit button after validation passes
+            $(this).find('button[type="submit"]').attr('disabled', true).text('Saving...');
+        });
+
+    });
+</script>

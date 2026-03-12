@@ -1,0 +1,127 @@
+﻿@{
+    ViewData["Title"] = "Person Form Success";
+    bool userExists = TempData["UserExists"] != null && (bool)TempData["UserExists"];
+    int personId = TempData["PersonId"] != null ? (int)TempData["PersonId"] : 0;
+    string personName = TempData["PersonName"] != null ? TempData["PersonName"].ToString() : "";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+<style>
+    body {
+        background: linear-gradient(135deg, #f3e5f5, #e1f5fe);
+    }
+
+    .success-card {
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        padding: 20px;
+    }
+
+    .icon-success {
+        font-size: 60px;
+        color: #28a745;
+    }
+
+    .icon-returning {
+        font-size: 60px;
+        color: #ffc107;
+    }
+
+    .btn-counselling {
+        background-color: #0d6efd;
+        border: none;
+        color: white;
+    }
+
+        .btn-counselling:hover {
+            background-color: #084298;
+        }
+
+    .btn-add {
+        background-color: #20c997;
+        border: none;
+        color: white;
+    }
+
+        .btn-add:hover {
+            background-color: #146c43;
+        }
+
+    .btn-home {
+        background-color: #6f42c1;
+        border: none;
+        color: white;
+    }
+
+        .btn-home:hover {
+            background-color: #4e2a8e;
+        }
+
+    .info-box {
+        background-color: #f8f9fa;
+        border-radius: 12px;
+        padding: 15px;
+        margin-top: 15px;
+    }
+</style>
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+
+    <div class="card success-card text-center" style="max-width:500px; width:100%;">
+
+        <div class="card-body">
+
+            <!-- Dynamic Icon -->
+            <div class="mb-3">
+                @if (userExists)
+                {
+                    <div class="icon-returning">⚠</div>
+                }
+                else
+                {
+                    <div class="icon-success">✔</div>
+                }
+            </div>
+
+            <!-- Dynamic Title -->
+            <h2 class="fw-bold @(userExists ? "text-warning" : "text-success")">
+                @(userExists ? "Returning Student" : "Record Saved Successfully!")
+            </h2>
+
+            <p class="text-muted mb-3">
+                @(userExists
+                                ? "This student already exists in the system."
+                                : "New student record has been successfully added.")
+            </p>
+
+            <!-- Info Box -->
+            <div class="info-box text-start">
+                <p><strong>👤 Student Name:</strong> @personName</p>
+               
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-grid gap-2 mt-4">
+
+                
+
+                <a asp-controller="Person"
+                   asp-action="Create"
+                   class="btn btn-add btn-lg">
+                    Add Another Record
+                </a>
+
+                <a asp-controller="Home"
+                   asp-action="Index"
+                   class="btn btn-home btn-lg">
+                    Go to Home
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>

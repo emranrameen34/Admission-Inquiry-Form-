@@ -1,0 +1,242 @@
+﻿@model AdmissionInquiryRecord.Models.Person
+
+@{
+    ViewData["Title"] = "Admission Inquiry Form";
+}
+
+<div class="text-center mt-5 mb-4">
+    <h2>USP Admission Inquiry Record Form</h2>
+    <hr style="width: 300px; margin: 10px auto; border: 2px solid #0d6efd;" />
+</div>
+
+<form asp-action="Create" method="post" id="personForm" enctype="multipart/form-data">
+
+    <!-- BASIC INFORMATION -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white text-center">
+            Basic Information
+        </div>
+        <div class="card-body row">
+
+            <div class="col-md-6 mb-3">
+                <label>Name <span class="text-danger">*</span></label>
+                <input asp-for="Name" class="form-control" required />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label>CNIC <span class="text-danger">*</span></label>
+                <input asp-for="CNIC" class="form-control" required pattern="\d{13}" title="CNIC must be 13 digits" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label>Cell No <span class="text-danger">*</span></label>
+                <input asp-for="CellNo" class="form-control" required pattern="92\d{10}" title="Cell number must start with 92 and have 12 digits total" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label>WhatsApp No</label>
+                <input asp-for="WhatsAppNo" class="form-control" pattern="92\d{10}" title="WhatsApp number must start with 92 and have 12 digits total" />
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>City <span class="text-danger">*</span></label>
+                <select asp-for="CityId" asp-items="ViewBag.Cities" class="form-control" required>
+                    <option value="">Select City</option>
+                </select>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>Tehsil <span class="text-danger">*</span></label>
+                <select asp-for="TehsilId" asp-items="ViewBag.Tehsils" class="form-control" required>
+                    <option value="">Select Tehsil</option>
+                </select>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>District <span class="text-danger">*</span></label>
+                <select asp-for="DistrictId" asp-items="ViewBag.Districts" class="form-control" required>
+                    <option value="">Select District</option>
+                </select>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- REFERRAL & SOURCE -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-success text-white text-center">Referral and Source</div>
+        <div class="card-body">
+
+            <div class="mb-3">
+                <label>Referred By</label>
+                <input asp-for="ReferredBy" class="form-control" id="referredByInput" />
+            </div>
+            <div class="mb-3">
+                <input asp-for="NotReferred" type="checkbox" id="notReferredCheckbox" /> Not Referred
+            </div>
+
+            <div class="mb-3">
+                <label>How did the candidate learn about us? (Optional)</label>
+                <div>
+                    @foreach (var source in ViewBag.LearnSources)
+                    {
+                        <input type="checkbox" name="SelectedSources" value="@source.SourceId" /> @source.SourceName <br />
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ACADEMIC INTEREST -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-info text-white text-center">Academic Interest</div>
+        <div class="card-body">
+
+            <div class="mb-3">
+                <label>Program Interested <span class="text-danger">*</span></label>
+                <select asp-for="ProgramInterestedId" asp-items="ViewBag.Programs" class="form-control" id="programInterested" required>
+                    <option value="">Select Program</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label>Alternate Program (Optional)</label>
+                <select asp-for="AlternativeProgramId" asp-items="ViewBag.Programs" class="form-control" id="alternateProgram">
+                    <option value="">Select Program</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label>Session <span class="text-danger">*</span></label><br />
+                @foreach (var session in ViewBag.Sessions as SelectList)
+                {
+                    <input type="radio" asp-for="SessionId" value="@session.Value" required /> @session.Text <br />
+                }
+            </div>
+
+            <div class="mb-3">
+                <label>Assign Counsellor (Optional)</label>
+                <select asp-for="CounsellorId" asp-items="ViewBag.Counsellors" class="form-control">
+                    <option value="">Select Counsellor (Optional)</option>
+                </select>
+            </div>
+
+
+
+        </div>
+    </div>
+
+    <div class="text-center mb-5">
+        <button type="submit" class="btn btn-primary px-5">Submit Inquiry</button>
+    </div>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function () {
+
+    // ========== FRONT-END VALIDATION ==========
+    $("#personForm").on("submit", function (e) {
+        var isValid = true;
+
+        // Remove previous error highlights/messages
+        $(".is-invalid").removeClass("is-invalid");
+        $(".invalid-feedback").remove();
+
+        function showError(element, message) {
+            element.addClass("is-invalid");
+            if (element.next(".invalid-feedback").length === 0) {
+                element.after("<div class='text-danger invalid-feedback mt-1'>" + message + "</div>");
+            }
+            isValid = false;
+        }
+
+        // Name validation
+        var name = $("[name='Name']");
+        if (name.val().trim().length < 3) showError(name, "Please enter full name (min 3 characters).");
+
+        // CNIC validation
+        var cnic = $("[name='CNIC']");
+        if (!/^\d{13}$/.test(cnic.val().trim())) showError(cnic, "CNIC must be 13 digits.");
+
+        // CellNo validation
+        var cell = $("[name='CellNo']");
+        if (!/^92\d{10}$/.test(cell.val().trim())) showError(cell, "Cell number must start with 92 and be 12 digits.");
+
+        // WhatsAppNo validation (optional)
+        var whatsapp = $("[name='WhatsAppNo']");
+        if (whatsapp.val().trim() !== "" && !/^92\d{10}$/.test(whatsapp.val().trim())) {
+            showError(whatsapp, "WhatsApp number must start with 92 and be 12 digits.");
+        }
+
+        // Dropdowns validation
+        var city = $("[name='CityId']"), tehsil = $("[name='TehsilId']"), district = $("[name='DistrictId']"), program = $("[name='ProgramInterestedId']");
+        if (city.val() === "") showError(city, "Please select a city.");
+        if (tehsil.val() === "") showError(tehsil, "Please select a tehsil.");
+        if (district.val() === "") showError(district, "Please select a district.");
+        if (program.val() === "") showError(program, "Please select a program.");
+
+        // Session radio validation
+        if ($("input[name='SessionId']:checked").length === 0) {
+            var sessionRadios = $("input[name='SessionId']");
+            showError(sessionRadios.last(), "Please select a session.");
+        }
+
+        // Scroll to first invalid field
+        if (!isValid) {
+            e.preventDefault();
+            $('html, body').animate({ scrollTop: $(".is-invalid").first().offset().top - 100 }, 500);
+        }
+    });
+
+    // ========== Auto-fill on CNIC blur ==========
+    $("[name='CNIC']").on("blur", function () {
+        var cnic = $(this).val().trim();
+        if (cnic.length === 13) {
+            $.ajax({
+                url: '/Person/GetPersonByCNIC',
+                type: 'GET',
+                data: { cnic: cnic },
+                success: function (data) {
+                    if (data) {
+                        $("[name='Name']").val(data.name || "");
+                        $("[name='CellNo']").val(data.cellNo || "");
+                        $("[name='WhatsAppNo']").val(data.whatsAppNo || "");
+                        $("[name='CityId']").val(data.cityId || "").change();
+                        $("[name='TehsilId']").val(data.tehsilId || "").change();
+                        $("[name='DistrictId']").val(data.districtId || "").change();
+                        $("[name='ProgramInterestedId']").val(data.programInterestedId || "").change();
+                        $("[name='AlternativeProgramId']").val(data.alternativeProgramId || "").change();
+                        $("input[name='SessionId']").prop('checked', false);
+                        if (data.sessionId)
+                            $("input[name='SessionId'][value='" + data.sessionId + "']").prop('checked', true);
+                        $("[name='ReferredBy']").val(data.referredBy || "");
+                        $("#notReferredCheckbox").prop('checked', data.notReferred || false);
+                        $("#referredByInput").prop('readonly', data.notReferred || false);
+                        $("input[name='SelectedSources']").prop('checked', false);
+                        if (data.howDidCandidate) {
+                            data.howDidCandidate.split(",").forEach(function (id) {
+                                $("input[name='SelectedSources'][value='" + id.trim() + "']").prop('checked', true);
+                            });
+                        }
+                    }
+                }
+            });
+        }
+    });
+
+    // ========== Not Referred toggle ==========
+    $("#notReferredCheckbox").change(function () {
+        if (this.checked) {
+            $("#referredByInput").val("Not Referred").prop('readonly', true);
+        } else {
+            $("#referredByInput").val("").prop('readonly', false);
+        }
+    });
+
+    // ========== Alternate Program disable if same as main ==========
+    $("#programInterested").change(function () {
+        var selected = $(this).val();
+        $("#alternateProgram option").prop("disabled", false);
+        $("#alternateProgram option[value='" + selected + "']").prop("disabled", true);
+        if ($("#alternateProgram").val() === selected)
+            $("#alternateProgram").val("");
+    });
+
+});
+</script>
